@@ -6,7 +6,7 @@ import {Provider} from 'react-redux';
 
 import {createLogger} from 'redux-logger'
 import thunk from 'redux-thunk'
-import promiseMiddleware from 'redux-promise-middleware';
+import promise from 'redux-promise-middleware';
 
 import {loadState, saveState} from './localStorage';
 
@@ -15,9 +15,10 @@ import reducer from './reducers'
 import App from './containers/App'
 
 import "./styles/main.less";
+import {sanitizePersistedOptions} from "./reducers/options";
 
 
-const middleware = [thunk, promiseMiddleware()];
+const middleware = [thunk, promise];
 if (process.env.NODE_ENV !== 'production') {
     middleware.push(createLogger());
 }
@@ -30,6 +31,8 @@ const persistedState = loadState();
 */
 if (persistedState !== undefined) {
     delete persistedState.options.hydrated;
+
+    sanitizePersistedOptions(persistedState.options);
 }
 
 const store = createStore(

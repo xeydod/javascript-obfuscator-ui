@@ -1,8 +1,19 @@
 import * as types from '../constants/ActionTypes';
 
-import {SOURCEMAP_SEPARATE, SOURCEMAP_OFF} from '../containers/OptionsContainer';
+import {
+    SOURCEMAP_SEPARATE,
+    OPTIONS_PRESET_DEFAULT,
+    IDENTIFIER_NAMES_GENERATOR_HEXADECIMAL,
+    TARGET_BROWSER,
+    STRING_ARRAY_ENCODING_NONE,
+    STRING_ARRAY_ENCODING_BASE64,
+    STRING_ARRAY_ENCODING_RC4,
+    STRING_ARRAY_WRAPPERS_TYPE_VARIABLE, STRING_ARRAY_INDEXES_TYPE_HEXADECIMAL_NUMBER
+} from '../containers/OptionsContainer';
 
 const initialState = {
+    optionsPreset: OPTIONS_PRESET_DEFAULT,
+
     compact: true,
     selfDefending: false,
     disableConsoleOutput: false,
@@ -10,24 +21,51 @@ const initialState = {
     debugProtection: false,
     debugProtectionInterval: false,
 
+    splitStrings: false,
+
+    splitStringsChunkLength: 10,
+    splitStringsChunkLengthEnabled: false,
+
     stringArray: true,
 
     rotateStringArray: true,
     rotateStringArrayEnabled: true,
 
-    stringArrayThreshold: 0.8,
+    shuffleStringArray: true,
+    shuffleStringArrayEnabled: true,
+
+    simplify: true,
+
+    stringArrayThreshold: 0.75,
     stringArrayThresholdEnabled: true,
 
-    stringArrayEncoding: 'false',
+    stringArrayIndexesType: [
+        STRING_ARRAY_INDEXES_TYPE_HEXADECIMAL_NUMBER
+    ],
+
+    stringArrayIndexShift: true,
+
+    stringArrayEncoding: [
+        STRING_ARRAY_ENCODING_NONE
+    ],
     stringArrayEncodingEnabled: true,
 
+    stringArrayWrappersCount: 1,
+    stringArrayWrappersChainedCalls: true,
+    stringArrayWrappersParametersMaxCount: 2,
+    stringArrayWrappersType: STRING_ARRAY_WRAPPERS_TYPE_VARIABLE,
+
+    numbersToExpressions: false,
+
     sourceMap: false,
-    sourceMapMode: 'off',
+    sourceMapMode: SOURCEMAP_SEPARATE,
     sourceMapBaseUrl: '',
     sourceMapFileName: '',
-    sourceMapSeparate: false,
 
     domainLock: [],
+    domainLockEnabled: true,
+
+    forceTransformStrings: [],
     reservedNames: [],
     reservedStrings: [],
 
@@ -42,13 +80,17 @@ const initialState = {
     unicodeEscapeSequence: false,
 
     renameGlobals: false,
+    renameProperties: false,
 
-    target: 'browser',
+    target: TARGET_BROWSER,
 
-    identifierNamesGenerator: 'hexadecimal',
+    identifierNamesGenerator: IDENTIFIER_NAMES_GENERATOR_HEXADECIMAL,
+    identifiersDictionary: [],
     identifiersPrefix: '',
 
     transformObjectKeys: false,
+
+    ignoreRequireImports: false
 
 };
 
@@ -64,12 +106,31 @@ export const options = (state = initialState, action) => {
 
     switch (action.type) {
 
+        case types.RESET_OPTIONS: {
+            return initialState;
+        }
+
+        case types.SET_OPTIONS_PRESET: {
+            return {
+                ...state,
+                ...action.options,
+                optionsPreset: action.optionsPreset
+            };
+        }
+
         case types.TOGGLE_COMPACT_CODE: {
             const compact = !state.compact;
             return {
                 ...state,
                 compact,
                 selfDefending: state.selfDefending && compact,
+            };
+        }
+
+        case types.TOGGLE_SIMPLIFY: {
+            return {
+                ...state,
+                simplify: !state.simplify,
             };
         }
 
@@ -103,6 +164,22 @@ export const options = (state = initialState, action) => {
                 debugProtectionInterval: !state.debugProtectionInterval,
             };
 
+        case types.TOGGLE_SPLIT_STRINGS: {
+            const splitStrings = !state.splitStrings;
+
+            return {
+                ...state,
+                splitStrings,
+                splitStringsChunkLengthEnabled: splitStrings,
+            };
+        }
+
+        case types.SET_SPLIT_STRINGS_CHUNK_LENGTH:
+            return {
+                ...state,
+                splitStringsChunkLength: action.chunkLength
+            };
+
         case types.TOGGLE_STRING_ARRAY: {
             // Also change the TOGGLE_DEAD_CODE_INJECTION below if changed
             const stringArray = !state.stringArray;
@@ -110,15 +187,28 @@ export const options = (state = initialState, action) => {
                 ...state,
                 stringArray,
                 rotateStringArrayEnabled: stringArray,
+                shuffleStringArrayEnabled: stringArray,
                 stringArrayThresholdEnabled: stringArray,
                 stringArrayEncodingEnabled: stringArray,
             };
         }
 
+        case types.TOGGLE_STRING_ARRAY_INDEX_SHIFT:
+            return {
+                ...state,
+                stringArrayIndexShift: !state.stringArrayIndexShift
+            };
+
         case types.TOGGLE_ROTATE_STRING_ARRAY:
             return {
                 ...state,
                 rotateStringArray: !state.rotateStringArray
+            };
+
+        case types.TOGGLE_SHUFFLE_STRING_ARRAY:
+            return {
+                ...state,
+                shuffleStringArray: !state.shuffleStringArray
             };
 
         case types.SET_STRING_ARRAY_ENCODING:
@@ -133,13 +223,48 @@ export const options = (state = initialState, action) => {
                 stringArrayThreshold: action.threshold
             };
 
+        case types.SET_STRING_ARRAY_INDEXES_TYPE:
+            return {
+                ...state,
+                stringArrayIndexesType: action.indexesType
+            };
+
+        case types.SET_STRING_ARRAY_WRAPPERS_COUNT:
+            return {
+                ...state,
+                stringArrayWrappersCount: action.stringArrayWrappersCount
+            };
+
+        case types.SET_STRING_ARRAY_WRAPPERS_PARAMETERS_MAX_COUNT:
+            return {
+                ...state,
+                stringArrayWrappersParametersMaxCount: action.stringArrayWrappersParametersMaxCount
+            };
+
+        case types.TOGGLE_STRING_ARRAY_WRAPPERS_CHAINED_CALLS:
+            return {
+                ...state,
+                stringArrayWrappersChainedCalls: !state.stringArrayWrappersChainedCalls
+            };
+
+        case types.SET_STRING_ARRAY_WRAPPERS_TYPE:
+            return {
+                ...state,
+                stringArrayWrappersType: action.stringArrayWrappersType
+            };
+
+        case types.TOGGLE_SOURCEMAP: {
+            return {
+                ...state,
+                sourceMap: !state.sourceMap
+            };
+        }
+
         case types.SET_SOURCEMAP_MODE: {
             const mode = action.mode;
             return {
                 ...state,
-                sourceMap: mode !== SOURCEMAP_OFF,
-                sourceMapMode: mode,
-                sourceMapSeparate: mode === SOURCEMAP_SEPARATE
+                sourceMapMode: mode
             };
         }
 
@@ -189,6 +314,24 @@ export const options = (state = initialState, action) => {
                 reservedNames: state.reservedNames.filter((name) => name !== action.name),
             };
 
+        case types.ADD_FORCE_TRANSFORM_STRING: {
+            const string = action.string;
+            if (state.forceTransformStrings.indexOf(name) !== -1)
+                return state;
+
+            return {
+                ...state,
+                forceTransformStrings: [...state.forceTransformStrings, string],
+            };
+        }
+
+        case types.REMOVE_FORCE_TRANSFORM_STRING: {
+            return {
+                ...state,
+                forceTransformStrings: state.forceTransformStrings.filter((string) => string !== action.string)
+            };
+        }
+
         case types.ADD_RESERVED_STRING: {
             const string = action.string;
             if (state.reservedStrings.indexOf(string) !== -1)
@@ -204,6 +347,21 @@ export const options = (state = initialState, action) => {
             return {
                 ...state,
                 reservedStrings: state.reservedStrings.filter((string) => string !== action.string),
+            };
+
+        case types.ADD_DICTIONARY_IDENTIFIER: {
+            const name = action.name;
+
+            return {
+                ...state,
+                identifiersDictionary: [...state.identifiersDictionary, name],
+            };
+        }
+
+        case types.REMOVE_DICTIONARY_IDENTIFIER:
+            return {
+                ...state,
+                identifiersDictionary: state.identifiersDictionary.filter((name) => name !== action.name),
             };
 
         case types.SET_SEED:
@@ -244,6 +402,12 @@ export const options = (state = initialState, action) => {
             };
         }
 
+        case types.TOGGLE_NUMBERS_TO_EXPRESSIONS:
+            return {
+                ...state,
+                numbersToExpressions: !state.numbersToExpressions
+            };
+
         case types.TOGGLE_UNICODE_ESCAPE_SEQUENCE:
             return {
                 ...state,
@@ -256,11 +420,26 @@ export const options = (state = initialState, action) => {
                 renameGlobals: !state.renameGlobals
             };
 
-        case types.SET_TARGET:
+        case types.TOGGLE_RENAME_PROPERTIES:
             return {
                 ...state,
-                target: action.target
+                renameProperties: !state.renameProperties
             };
+
+        case types.SET_TARGET: {
+            const target = action.target;
+
+            const isNodeTarget = target === 'node';
+
+            return {
+                ...state,
+                target,
+                ...isNodeTarget && {
+                    domainLock: []
+                },
+                domainLockEnabled: !isNodeTarget
+            };
+        }
 
         case types.SET_IDENTIFIER_NAMES_GENERATOR:
             return {
@@ -280,8 +459,31 @@ export const options = (state = initialState, action) => {
                 transformObjectKeys: !state.transformObjectKeys
             };
 
+        case types.TOGGLE_IGNORE_REQUIRE_IMPORTS:
+            return {
+                ...state,
+                ignoreRequireImports: !state.ignoreRequireImports
+            };
+
         default:
             return state
     }
-
 };
+
+export function sanitizePersistedOptions(persistedOptions) {
+    if (!Array.isArray(persistedOptions.stringArrayEncoding)) {
+        persistedOptions.stringArrayEncoding = initialState.stringArrayEncoding;
+    } else {
+        for (const value of persistedOptions.stringArrayEncoding) {
+            if (
+                value !== STRING_ARRAY_ENCODING_NONE
+                || value !== STRING_ARRAY_ENCODING_BASE64
+                || value !== STRING_ARRAY_ENCODING_RC4
+            ) {
+                persistedOptions.stringArrayEncoding = initialState.stringArrayEncoding;
+
+                break;
+            }
+        }
+    }
+}

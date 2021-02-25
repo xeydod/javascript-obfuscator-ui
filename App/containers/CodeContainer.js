@@ -8,9 +8,9 @@ import {Form, Grid, Segment, Button, Icon, Tab} from 'semantic-ui-react';
 import Dropzone from 'react-dropzone';
 
 import EditorContainer from '../containers/EditorContainer';
+import {DEFAULT_OUTPUT_FILE_NAME} from '../reducers/code';
 
 const TAB_CODE = 0;
-const TAB_UPLOAD = 1;
 const TAB_RESULTS = 2;
 
 class CodeContainer extends Component {
@@ -21,6 +21,7 @@ class CodeContainer extends Component {
         pending: PropTypes.bool,
         hasResults: PropTypes.bool,
         onCodeChange: PropTypes.func,
+        onOutputFileNameChange: PropTypes.func,
         onObfuscateClick: PropTypes.func,
         onDownloadCodeClick: PropTypes.func,
         onDownloadSourceMapClick: PropTypes.func,
@@ -58,8 +59,18 @@ class CodeContainer extends Component {
         });
     }
 
+    onCodeChange(code) {
+        const {code: prevCode, onCodeChange, onOutputFileNameChange} = this.props;
+
+        onCodeChange(code);
+
+        if (code !== prevCode) {
+            onOutputFileNameChange(DEFAULT_OUTPUT_FILE_NAME);
+        }
+    }
+
     onDrop(files) {
-        const {onCodeChange} = this.props;
+        const {onCodeChange, onOutputFileNameChange} = this.props;
 
         if (!window.File || !window.FileReader) {
             alert('Your browser does not support File API');
@@ -70,6 +81,7 @@ class CodeContainer extends Component {
 
         reader.onload = (event) => {
             onCodeChange(event.target.result);
+            onOutputFileNameChange(file.name);
             this.onTabClick(TAB_CODE);
         };
 
@@ -147,7 +159,6 @@ class CodeContainer extends Component {
             code,
             obfuscatedCode,
             pending,
-            onCodeChange,
             onObfuscateClick,
             onDownloadCodeClick,
             onDownloadSourceMapClick,
@@ -160,7 +171,7 @@ class CodeContainer extends Component {
                 menuItem: 'Copy & Paste JavaScript Code',
                 render: () => (
                     <Pane>
-                        <EditorContainer onBlur={onCodeChange} value={code}/>
+                        <EditorContainer onBlur={::this.onCodeChange} value={code}/>
                         <Segment basic>
                             <Button
                                 loading={pending}
@@ -178,8 +189,18 @@ class CodeContainer extends Component {
                 menuItem: 'Upload JavaScript File',
                 render: () => (
                     <Pane>
-                        <Dropzone onDrop={::this.onDrop} multiple={false} className="DropZone">
-                            <div>Try dropping some file here, or click to select file to upload.</div>
+                        <Dropzone
+                            onDrop={::this.onDrop}
+                            multiple={false}
+                        >
+                            {({getRootProps, getInputProps}) => (
+                                <section>
+                                    <div {...getRootProps({className: 'DropZone'})}>
+                                        <input {...getInputProps()} />
+                                        <div>Try dropping some file here, or click to select file to upload.</div>
+                                    </div>
+                                </section>
+                            )}
                         </Dropzone>
                     </Pane>
                 )
@@ -188,49 +209,50 @@ class CodeContainer extends Component {
                 menuItem: 'Output',
                 render: () => (
                     <Pane>
-                        <Form>
-                            <Form.TextArea
-                                value={obfuscatedCode}
-                                onFocus={(event) => event.target.select()}
-                            />
-                        </Form>
-
                         <Grid stackable columns={2} relaxed>
+                            <Grid.Column width={16}>
+                                <Form>
+                                    <Form.TextArea
+                                        value={obfuscatedCode}
+                                        rows={8}
+                                        onFocus={(event) => event.target.select()}
+                                    />
+                                </Form>
+                            </Grid.Column>
+
                             <Grid.Column width={13}>
-                                <Segment basic>
+                                <Button
+                                    disabled={!hasObfuscatedCode}
+                                    onClick={onDownloadCodeClick}
+                                >
+                                    <Icon name='download'/> Download obfuscated code
+                                </Button>
+
+                                {hasSourceMap &&
                                     <Button
-                                        disabled={!hasObfuscatedCode}
-                                        onClick={onDownloadCodeClick}
+                                        onClick={onDownloadSourceMapClick}
                                     >
-                                        <Icon name='download'/> Download obfuscated code
+                                        <Icon name='download'/> Download source map file
                                     </Button>
-                                    {hasSourceMap &&
-                                        <Button
-                                            onClick={onDownloadSourceMapClick}
-                                        >
-                                            <Icon name='download'/> Download source map file
-                                        </Button>
-                                    }
-                                </Segment>
+                                }
                             </Grid.Column>
 
-                            <Grid.Column width={3}>
-                                <Segment basic>
-                                    <Form.Checkbox
-                                        label='Evaluate'
-                                        checked={this.state.evaluate}
-                                        onChange={this.toggleEvaluate}/>
-                                </Segment>
+                            <Grid.Column width={3} verticalAlign="middle">
+                                <Form.Checkbox
+                                    label='Evaluate'
+                                    checked={this.state.evaluate}
+                                    onChange={this.toggleEvaluate}
+                                />
                             </Grid.Column>
+
+                            {this.state.evaluate &&
+                                <Grid.Column width={16}>
+                                    <div className="evaluatedCode">
+                                        {this.state.evaluatedResult}
+                                    </div>
+                                </Grid.Column>
+                            }
                         </Grid>
-
-                        {this.state.evaluate &&
-                            <Segment basic>
-                                <div className="evaluatedCode">
-                                    {this.state.evaluatedResult}
-                                </div>
-                            </Segment>
-                        }
                     </Pane>
                 )
             }
@@ -241,14 +263,12 @@ class CodeContainer extends Component {
         const tabIndex = this.state.selectedTabIndex;
 
         return (
-            <div>
-                <Tab
-                    activeIndex={tabIndex}
-                    menu={{attached: 'top', stackable: true, widths: 'three'}}
-                    panes={this.buildPanes()}
-                    onTabChange={(event, data) => this.onTabClick(data.activeIndex)}
-                />
-            </div>
+            <Tab
+                activeIndex={tabIndex}
+                menu={{attached: 'top', stackable: true, widths: 'three'}}
+                panes={this.buildPanes()}
+                onTabChange={(event, data) => this.onTabClick(data.activeIndex)}
+            />
         );
     }
 }

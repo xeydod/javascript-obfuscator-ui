@@ -8,7 +8,7 @@
           content="JavaScript Obfuscator is a free online tool that obfuscates your source code, preventing it from being stolen and used without permission.">
     <meta name="Keywords" content="obfuscator, javascript obfuscator, javascript obfuscator tool, obfuscation js, obfuscate tool, обфускатор, code obfuscator, obfuscator online, uglify, minify, js obfuscator, obfuscator io, obfuscator.io, obfuscate, protection">
 
-    <link rel="stylesheet" href="/static/dist/stylesheets/main.css" media="screen" title="no title">
+    <link rel="stylesheet" href="/static/dist/stylesheets/bundle.css" media="screen" title="no title">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-116652505-1"></script>
@@ -47,17 +47,17 @@
             <div class="ui basic segment">
                 <h1>JavaScript Obfuscator Tool</h1>
                 <p>
-                    A free and efficient obfuscator for JavaScript (including ES2017). Make your code harder to copy and
+                    A free and efficient obfuscator for JavaScript (including partial support of ES2019). Make your code harder to copy and
                     prevent people from stealing your work. This tool is a Web UI to the excellent (and open source)
-                    <code><a href="https://github.com/javascript-obfuscator/javascript-obfuscator" target="_new">javascript-obfuscator</a>@0.18.1</code>
+                    <code><a href="https://github.com/javascript-obfuscator/javascript-obfuscator" target="_new">javascript-obfuscator</a>@2.10.3</code>
                     created by Timofey Kachalov.
                 </p>
                 <div id="GithubBadges">
                     <iframe
-                        src="https://ghbtns.com/github-btn.html?user=javascript-obfuscator&repo=javascript-obfuscator&type=star&size=large"
+                        src="https://ghbtns.com/github-btn.html?user=javascript-obfuscator&repo=javascript-obfuscator&type=star&size=large&count=true"
                         frameborder="0"
                         scrolling="0"
-                        width="80px"
+                        width="150px"
                         height="30px"
                     ></iframe>
                     <iframe
@@ -67,6 +67,17 @@
                         width="90px"
                         height="30px"
                     ></iframe>
+                    <div
+                        id="donate"
+                        title="Sponsor javascript-obfuscator/javascript-obfuscator"
+                        role="button"
+                        onclick="window.scrollTo(0, document.body.scrollHeight)"
+                    >
+                        <svg id="donate-heart" viewBox="0 0 12 16" version="1.1" width="12" height="16" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M8.727 3C7.091 3 6.001 4.65 6.001 4.65S4.909 3 3.273 3C1.636 3 0 4.1 0 6.3 0 9.6 6 14 6 14s6-4.4 6-7.7C12 4.1 10.364 3 8.727 3z"></path>
+                        </svg>
+                        Sponsor
+                    </div>
                 </div>
             </div>
         </div>
@@ -91,7 +102,7 @@
     <div class="column">
         <h3>So, it is like UglifyJS, Closure Compiler, etc?</h3>
         <p>Yes and no. While UglifyJS (and others minifiers) does make the output code harder to understand
-            (compressed and ugly), it can be easily be transformed into something readable using a JS
+            (compressed and ugly), it can be easily transformed into something readable using a JS
             Beautifier.</p>
         <p>This tool prevents that by using various transformations and "traps", such as
             <strong>self-defending</strong> and <strong>debug protection</strong>.</p>
@@ -122,374 +133,10 @@
 
     <div class="row">
         <div class="column">
-
-            <table class="ui definition table" id="Options">
-                <tbody>
-
-                <tr>
-                    <td class="collapsing">Compact Code</td>
-                    <td>
-                        Removes line breaks from the output obfuscated code.
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="collapsing">Identifier Names Generator</td>
-                    <td>
-                        <p>Use this option to control how identifiers (variable names, functions names, etc) will be
-                            obfuscated.</p>
-
-                        <strong>hexadecimal</strong>
-                        <p>Generates random identifier names using a hexadecimal pattern (e.g: <code>0xabc123</code>)
-                        </p>
-
-                        <strong>mangled</strong>
-                        <p>Uses short identifier names (e.g: <code>a</code>, <code>b</code>, <code>c</code>, etc.)</p>
-
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="collapsing">Identifiers Prefix</td>
-                    <td>
-                        <p>This options makes all global identifiers have a specific prefix.</p>
-                        <p>Use this option when obfuscating multiple files that are loaded on the same page. This option
-                            helps to avoid conflicts between global identifiers of these files. Use a different prefix
-                            for each file.</p>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="collapsing">Rename Globals</td>
-                    <td>
-                        <div class="ui tiny message">
-                            <p><i class="warning sign icon"></i> This option can break your code. Only enable it if you
-                                know what it does.</p>
-                        </div>
-                        <p>Enables the obfuscation of global variables and function names with declaration.</p>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="collapsing">Self Defending</td>
-                    <td>
-                        <p>This option makes the output code resilient against formating and variable renaming. If one
-                            tries to use a JavaScript beautifier on the obfuscated code, the code won't work anymore,
-                            making it harder to understand and modify it.</p>
-                        <p>
-                            <small>requires the <strong>Compact Code</strong> setting.</small>
-                        </p>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="collapsing">Control Flow Flattening</td>
-                    <td>
-
-                        <div class="ui tiny message">
-                            <p><i class="warning sign icon"></i> This option greatly affects the performance up to 1.5x
-                                slower runtime speed.</p>
-                        </div>
-
-                        <p>
-                            Enables code control flow flattening. Control flow flattening is a structure transformation
-                            of the source code that hinders program comprehension. See the docs on <a
-                                href="https://github.com/javascript-obfuscator/javascript-obfuscator#controlflowflattening"
-                                target="_new">JavaScript's obfuscator GH page</a> for an example of how the
-                            transformation works.
-                        </p>
-
-                        <table class="ui definition table">
-                            <tbody>
-
-                            <tr>
-                                <td class="collapsing">Control Flow Flattening Threshold</td>
-                                <td>
-                                    <p>You can use this setting to adjust the probability (from 0 to 1) that a <code>controlFlowFlattening</code>
-                                        transformation will be applied to a node.</p>
-                                    <p>In larger codebases it's advised to lower this value, because larger amounts of
-                                        control flow transformations can increase the size of your code and slow it
-                                        down.</p>
-                                </td>
-                            </tr>
-
-                            </tbody>
-                        </table>
-
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="collapsing">Dead Code Injection</td>
-                    <td>
-
-                        <div class="ui tiny message">
-                            <p><i class="warning sign icon"></i> This option increases the size of the obfuscated code
-                                greatly (up to 200%).</p>
-                        </div>
-
-                        <p>
-                            This feature adds random blocks of dead code (i.e: code that won't be executed) to the
-                            obfuscated output, making it harder to be reverserd-engineered. See the docs on <a
-                                href="https://github.com/javascript-obfuscator/javascript-obfuscator#deadcodeinjection"
-                                target="_new">JavaScript Obfuscator's GH page</a> for an example of how this feature
-                            works.
-                        </p>
-
-                        <table class="ui definition table">
-                            <tbody>
-
-                            <tr>
-                                <td class="collapsing">Dead Code Injection Threshold</td>
-                                <td>
-                                    <p>You can use this setting to adjust the probability (from 0 to 1) that a node will
-                                        be affected by the <code>deadCodeInjection</code> option.</p>
-                                </td>
-                            </tr>
-
-                            </tbody>
-                        </table>
-
-                        <p>
-                            <small>requires the <strong>String Array</strong> option.</small>
-                        </p>
-
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="collapsing">String Array</td>
-                    <td>
-                        <p>
-                            Removes string literals and place them in a special array. For instance the string "Hello
-                            World" in <code>var m = "Hello World";</code> will be replaced to a call to a function that
-                            will retrieve its value at runtime, e.g: <code>var m = _0xb0c3('0x1');</code>
-                        </p>
-
-                        <p>See the options below on how to configure this feature be more or less resilient.</p>
-
-                        <table class="ui definition table">
-                            <tbody>
-
-                            <tr>
-                                <td class="collapsing">Rotate String Array</td>
-                                <td>
-                                    <p>Shift the <code>stringArray</code> array by a fixed and random (generated at the
-                                        code obfuscation) places. This makes it harder to match the order of the removed
-                                        strings to their original place.</p>
-                                    <p>This option is recommended if your original source code isn't small, as the
-                                        helper function can attract attention.</p>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td class="collapsing">Encode String Literals</td>
-                                <td>
-                                    <div class="ui tiny message">
-                                        <p><i class="warning sign icon"></i> This option can slightly slow down your
-                                            script.</p>
-                                    </div>
-                                    <p>Encode all string literals of the <code>stringArray</code> using either Base64 or
-                                        RC4 and inserts a special function that it's used to decode it back at runtime.
-                                    </p>
-                                    <p>Beware that the RC4 option is about 30-35% slower than the Base64 option, but
-                                        it's more difficult to retrieve the strings back.</p>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td class="collapsing">String Array Threshold</td>
-                                <td>
-                                    <p>You can use this setting to adjust the probability (from 0 to 1) that a string
-                                        literal will be inserted into the <code>stringArray</code>.</p>
-                                    <p>This setting is useful in large codebases as repeatdely calls to the <code>stringArray</code>
-                                        function can slow down your code.</p>
-                                </td>
-                            </tr>
-
-                            </tbody>
-                        </table>
-
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="collapsing">Transform Object Keys</td>
-                    <td>
-                        <p>Transforms (obfuscates) object keys.</p>
-                        <p>For instance, this code <code>var a = {enabled: true};</code> when obfuscated with this
-                            option will hide the <code>enabled</code> object key: <code>var a = {}; a[_0x2ae0[('0x0')] =
-                                true;</code>.</p>
-                        <p>See the <a
-                                href="https://github.com/javascript-obfuscator/javascript-obfuscator#transformobjectkeys"
-                                target="_new">official documentation of the JavaScript Obfuscator on GitHub</a> for a
-                            full example.</p>
-                        <p>
-                            <small>ideally used with the <strong>String Array</strong> setting.</small>
-                        </p>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="collapsing">Escape Unicode Sequence</td>
-                    <td>
-                        <p>Converts all the strings to their unicode representation. For instance, the string <code>"Hello
-                            World!"</code> will be converted to <code>"'\x48\x65\x6c\x6c\x6f\x20\x57\x6f\x72\x6c\x64\x21"</code>.
-                        </p>
-                        <p>This convertion is pretty easy to revert, and will increase the obfuscated code size greatly.
-                            It's not recommended on larger code bases.</p>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="collapsing">Disable Console Output</td>
-                    <td>
-                        Disables the use of <code>console.log</code>, <code>console.info</code>,
-                        <code>console.error</code> and <code>console.warn</code> by replacing them with empty functions.
-                        This makes the use of the debugger harder.
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="collapsing">Debug Protection</td>
-                    <td>
-                        <div class="ui tiny message">
-                            <p><i class="warning sign icon"></i> Can freeze your browser if you open the Developer
-                                Tools.</p>
-                        </div>
-                        <p>This option makes it almost impossible to use the <strong>Console</strong> tab of the
-                            Developer Tools (both on Google Chrome and Mozilla Firefox).</p>
-
-                        <table class="ui definition table">
-                            <tbody>
-
-                            <tr>
-                                <td class="collapsing">Debug Protection Interval</td>
-                                <td>
-                                    <p>If checked, an interval is used to force the debug mode on the
-                                        <strong>Console</strong> tab, making it harder to use other features of the
-                                        Developer Tools.</p>
-                                    <p>How does it works? A special code that calls <code>debugger;</code> repeatedly is
-                                        inserted throughout the obfuscated source code.</p>
-                                </td>
-                            </tr>
-
-                            </tbody>
-                        </table>
-
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="collapsing">Domain Lock</td>
-                    <td>
-                        <p>Locks the obfuscated source code so it only runs on specific domains and/or sub-domains. This
-                            makes really hard for someone just copy and paste your source code and run elsewhere.</p>
-                        <strong>Multiple domains and sub-domains</strong>
-                        <p>It's possible to lock your code to more than one domain or sub-domain. For instance, to lock
-                            it so the code only runs on <strong>www.example.com</strong> add
-                            <code>www.example.com</code>, to make it work on <strong>any sub-domain from
-                                example.com</strong>, use <code>.example.com</code>.</p>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="collapsing">Reserved Names</td>
-                    <td>
-                        <p>Disables obfuscation and generation of identifiers, which being matched by passed RegExp
-                            patterns.</p>
-                        <p>For instance, if you add <code>^someName</code>, the obfuscator will ensure that all
-                            variables, function names and function arguments that starts with <strong>someName</strong>
-                            will not get mangled.</p>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="collapsing">Reserved Strings</td>
-                    <td>
-                        <p>Disables transformation of string literals, which being matched by passed RegExp patterns.</p>
-                        <p>For instance, if you add <code>^some *string</code>, the obfuscator will ensure that all
-                            strings that starts with <strong>some string</strong>
-                            will not get moved to the `stringArray`.</p>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="collapsing">Source Map</td>
-                    <td>
-                        <div class="ui tiny message">
-                            <p><i class="warning sign icon"></i> Be sure not to upload the obfuscated source code with
-                                the inline source map embedded on it, as it contains your original source code.</p>
-                        </div>
-
-                        <p>Source maps can be useful to help you debug your obfuscated Java Script source code. If you
-                            want or need to debug in production, you can upload the separate source map file to a secret
-                            location and then point your browser there. <a
-                                    href="https://developers.google.com/web/tools/chrome-devtools/javascript/source-maps"
-                                    target="_new">Read more about source maps on the Google Chrome Developer Tools
-                                website</a>.</p>
-
-                        <strong>Inline Source Map</strong>
-                        <p>This embeds the source map of your source in the result of the obfuscated code. Useful if you
-                            just want to debug locally on your machine.</p>
-
-                        <strong>Separate Source Map</strong>
-                        <p>This generates a separate file with the source map. Useful to debug code in production, as
-                            this enables you to upload the source map to a secret location on your server and then point
-                            your browser to use it.</p>
-
-                        <p>Use the <strong>Source Map Base URL</strong> and <strong>Source Map File Name</strong> to
-                            customize the <code>sourceMappingURL</code> property that will get appended to the end of
-                            your obfuscated code.</p>
-
-                        <p>For instance, if you set the <strong>Base URL</strong> to
-                            <code>"http://localhost:9000"</code> and <strong>File Name</strong> to
-                            <code>"example"</code>, you'll get: <code>//#
-                                sourceMappingURL=http://localhost:9000/example.js.map</code>. appended to the end of
-                            your obfuscated code.</p>
-
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="collapsing">Seed</td>
-                    <td>
-                        <p>By default (<code>seed = 0</code>), each time you obfuscate your code you'll get a new result
-                            (i.e: different variable names, different variables inserted into the
-                            <code>stringArray</code>, etc). If you want repeatable results, set the <code>seed</code> to
-                            a specific integer.</p>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="collapsing">Target</td>
-                    <td>
-                        <p>You can set the target environment of the obfuscated code to one of the following:</p>
-                        <ul>
-                            <li><strong>Browser</strong></li>
-                            <li><strong>Browser No Eval</strong></li>
-                            <li><strong>Node</strong></li>
-                        </ul>
-                        <div class="ui tiny message">
-                            <p><i class="warning sign icon"></i>Currently the output of <code>browser</code> and <code>node</code>
-                                is identical.</p>
-                        </div>
-
-                    </td>
-                </tr>
-
-                </tbody>
-            </table>
-
-        </div> <!-- column -->
-    </div> <!-- row -->
-
-    <div class="row">
-        <div class="column">
-            <h3 id="FAQ">FAQ</h3>
+            <h2 class="header" id="FAQ">FAQ</h2>
 
             <h4>Why would I want to obfuscate my JavaScript code?</h4>
-            <p>There're a numerous reasons why it's a good idea to protect your code, such as:</p>
+            <p>There are numerous reasons why it's a good idea to protect your code, such as:</p>
             <ul>
                 <li>Prevent anyone from simply copy/pasting your work. This is specially important on 100% client side
                     projects, such as HTML5 games;
@@ -497,7 +144,7 @@
                 <li>Removal of comments and whitespace that aren't needed. Making it faster to load and harder to
                     understand;
                 </li>
-                <li>Protection of work that hasn't been paid yet. You can show your work to the client knowing that they
+                <li>Protection of work that hasn't been paid for yet. You can show your work to the client knowing that they
                     won't have the source code until the invoice has been paid.
                 </li>
             </ul>
@@ -509,11 +156,11 @@
                 interpret it, so there's no way to prevent that. And any tool that promises that is not being
                 honest.</p>
 
-            <h4>Why my obfuscated code is larger than my original source?</h4>
+            <h4>Why is my obfuscated code larger than my original source?</h4>
             <p>Because the obfuscator introduces new pieces of code that are meant to protect and defend against
                 debugging and reverse-engineering. Also strings are converted to <code>\xAB</code> hexadecimal code to
                 make things a little bit harder to understand. You don't have to worry too much about code size because
-                since there're a lot of repetition, the obfuscated code will be compressed extremely well by your
+                there is a lot of repetition, so the obfuscated code will be compressed extremely well by your
                 webserver (if you have GZIP compression enabled on your server, which most do nowadays).</p>
 
             <h4>Can I run a minifier such as UglifyJS or Google Closure Compiler on the obfuscated output?</h4>
@@ -566,8 +213,9 @@
                 </div>
                 <div class="ui small header">Also:</div>
                 <div id="DonateWallets" class="ui bulleted list">
-                    <div class="item">(Bitcoin) 14yhtZxLNp6ekZAgmEmPJqEKUP2VtUxQK6</div>
-                    <div class="item">(Ether) 0x5Df9eBcFB2D0f3315d03Ac112104b9023C409dc1</div>
+                    <div class="item"><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=javascript-obfuscator@yandex.ru&lc=US&no_note=0&item_name=Support+javascript-obfuscator&cn=&curency_code=USD&bn=PP-DonationsBF:btn_donateCC_LG.gif:NonHosted">PayPal Credit Card</a></div>
+                    <div class="item"><a href="https://www.paypal.me/javascriptobfuscator">PayPal</a></div>
+                    <div class="item">(Bitcoin) 1Nv2773RDNzodHDxuxaYkTvwBkYRHmPhnG</div>
                 </div>
                 <div class="ui tiny header">
                     Big thanks to all supporters!
@@ -580,7 +228,7 @@
         <div class="column">
             <div class="ui divider"></div>
             <span>&copy;
-                <a href="https://www.tiagoserafim.com/">Tiago Serafim</a> - <a
+                <a href="https://www.tiagoserafim.com/">Tiago Serafim</a>, <a href="https://github.com/sanex3339">Timofey Kachalov</a> - <a
                     href="https://github.com/javascript-obfuscator/javascript-obfuscator-ui">source-code</a> - Powered by <a
                     href="https://github.com/javascript-obfuscator/javascript-obfuscator">JavaScript Obfuscator</a>
             </span>
@@ -589,7 +237,9 @@
 
 </div>
 
-<script src="/static/dist/bundle.js"></script>
+<% if(htmlWebpackPlugin.files.js) { %>
+    <script src="/static/dist/<%= htmlWebpackPlugin.files.js %>"></script>
+<% } %>
 
 </body>
 </html>

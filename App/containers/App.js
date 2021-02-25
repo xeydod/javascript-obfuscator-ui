@@ -16,6 +16,7 @@ class App extends Component {
         dispatch: PropTypes.func,
         code: PropTypes.string,
         obfuscatedCode: PropTypes.string,
+        outputFileName: PropTypes.string,
         sourceMap: PropTypes.string,
         obfuscating: PropTypes.bool,
         obfuscated: PropTypes.bool,
@@ -26,13 +27,14 @@ class App extends Component {
     obfuscate() {
         const {dispatch} = this.props;
         const {code, options} = this.props;
-        dispatch(actions.obfuscateCode(code, options));
+
+        dispatch(actions.obfuscateCode(code, {...options}));
     }
 
     downloadCode() {
         const data = {
             mime: 'application/javascript',
-            filename: 'obfuscated.js',
+            filename: this.props.outputFileName,
             contents: this.props.obfuscatedCode,
         };
 
@@ -42,7 +44,7 @@ class App extends Component {
     downloadSourceMap() {
         const data = {
             mime: 'application/octet-stream',
-            filename: 'obfuscated.js.map',
+            filename: `${this.props.outputFileName}.map`,
             contents: this.props.sourceMap,
         };
 
@@ -65,14 +67,14 @@ class App extends Component {
         const hasObfuscatedCode = obfuscatedCode.length !== 0;
 
         return (
-            <div>
-
+            <React.Fragment>
                 <CodeContainer
                     code={code}
                     obfuscatedCode={obfuscatedCode}
                     pending={obfuscating}
                     hasResults={obfuscated || error}
                     onCodeChange={(code) => dispatch(actions.updateCode(code))}
+                    onOutputFileNameChange={(fileName) => dispatch(actions.updateOutputFileName(fileName))}
                     onObfuscateClick={::this.obfuscate}
                     onDownloadCodeClick={::this.downloadCode}
                     onDownloadSourceMapClick={::this.downloadSourceMap}
@@ -80,13 +82,8 @@ class App extends Component {
                     hasObfuscatedCode={hasObfuscatedCode}
                 />
 
-                <div className="ui grid">
-                    <div className="column">
-                        <OptionsContainer/>
-                    </div>
-                </div>
-
-            </div>
+                <OptionsContainer/>
+            </React.Fragment>
         );
     }
 
@@ -97,6 +94,7 @@ const mapStateToProps = (state) => {
     return {
         code: code.code,
         obfuscatedCode: code.obfuscatedCode,
+        outputFileName: code.outputFileName,
         sourceMap: code.sourceMap,
         obfuscating: code.obfuscating,
         obfuscated: code.obfuscated,
